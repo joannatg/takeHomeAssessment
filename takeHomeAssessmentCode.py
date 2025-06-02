@@ -1,5 +1,8 @@
 
-import pandas as pd
+
+    import matplotlib.pyplot as plt
+    import pandas as pd
+    from io import StringIO
 
 
 # Load the CSV file
@@ -144,3 +147,43 @@ if patients_with_no_visits:
     print(f"Patients with no visits at all: {', '.join(patients_with_no_visits)}")
 else:
     print("All patients have at least one visit.")
+
+#Visual exploration
+datasetToExplore = pd.read_csv("C:/Users/georgescuj/PycharmProjects/PythonProject/result.csv")
+    print(datasetToExplore.head(10))
+    csv_string = datasetToExplore.to_csv(index=False)  # convert DataFrame to CSV string
+    buffer = StringIO(csv_string)  # now this works
+
+    # Read the data into a DataFrame
+    df = pd.read_csv(StringIO(csv_string), delimiter='\t')
+    print(df.columns)
+
+
+    # Plot the histogram of outpatient visit counts
+    plt.figure(figsize=(10, 6))
+    plt.hist(datasetToExplore['outpatient_visit_count'], bins=10, edgecolor='black')
+    plt.title('Histogram of Outpatient Visit Counts')
+    plt.xlabel('Outpatient Visit Count')
+    plt.ylabel('Frequency')
+    plt.grid(True)
+    plt.show()
+
+# Convert enrollment_start_date to datetime format
+    datasetToExplore['enrollment_start_date'] = pd.to_datetime(datasetToExplore['enrollment_start_date'])
+
+    # Extract the month and year from enrollment_start_date
+    datasetToExplore['enrollment_month'] = datasetToExplore['enrollment_start_date'].dt.to_period('M')
+
+    # Count the number of unique patient IDs per month
+    patient_counts_per_month = datasetToExplore.groupby('enrollment_month')['patient_id'].nunique()
+
+    # Plot the bar chart
+    plt.figure(figsize=(10, 6))
+    patient_counts_per_month.plot(kind='bar', color='skyblue')
+    plt.xlabel('Enrollment Month')
+    plt.ylabel('Number of Unique Patient IDs')
+    plt.title('Number of Unique Patient IDs Enrolled per Month')
+    plt.xticks(rotation=45)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.tight_layout()
+
