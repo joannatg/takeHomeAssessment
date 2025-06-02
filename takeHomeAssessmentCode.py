@@ -148,8 +148,8 @@ if patients_with_no_visits:
 else:
     print("All patients have at least one visit.")
 
-#Visual exploration
-datasetToExplore = pd.read_csv("C:/Users/georgescuj/PycharmProjects/PythonProject/result.csv")
+#Visual explorations
+    datasetToExplore = pd.read_csv("C:/Users/georgescuj/PycharmProjects/PythonProject/result.csv")
     print(datasetToExplore.head(10))
     csv_string = datasetToExplore.to_csv(index=False)  # convert DataFrame to CSV string
     buffer = StringIO(csv_string)  # now this works
@@ -186,4 +186,31 @@ datasetToExplore = pd.read_csv("C:/Users/georgescuj/PycharmProjects/PythonProjec
     plt.xticks(rotation=45)
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.tight_layout()
+
+ # How ab. a dot plot
+
+    # Convert enrollment_start_date to datetime
+    datasetToExplore['enrollment_start_date'] = pd.to_datetime(datasetToExplore['enrollment_start_date'])
+
+    # Extract the month and year from enrollment_start_date
+    datasetToExplore['enrollment_month'] = datasetToExplore['enrollment_start_date'].dt.to_period('M')
+
+    # Count the number of unique patient IDs per month
+    patient_counts = datasetToExplore.groupby('enrollment_month')['patient_id'].nunique()
+
+    plt.figure(figsize=(10, 6))
+    x = patient_counts.index.astype(str)
+    y = patient_counts.values
+    jitter = np.random.uniform(-0.1, 0.1, size=len(x))
+    plt.scatter(x, y + jitter, alpha=0.7)
+
+    # Add labels and title
+    plt.xlabel('Enrollment Month')
+    plt.ylabel('Number of Unique Patient IDs')
+    plt.title('Number of Unique Patient IDs Enrolled per Month')
+
+    # Show the plot
+    plt.xticks(rotation=45)
+    plt.grid(False)
+    plt.show()
 
